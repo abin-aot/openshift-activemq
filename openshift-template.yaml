@@ -3,21 +3,26 @@ kind: Template
 metadata:
   name: openshift-activemq
 objects:
-- apiVersion: v1
-  kind: DeploymentConfig
+- kind: Secret
+  apiVersion: v1
+  stringData:
+    ACTIVEMQ_ADMIN_LOGIN: ${ACTIVEMQ_ADMIN_LOGIN}
+    ACTIVEMQ_ADMIN_PASSWORD: ${ACTIVEMQ_ADMIN_PASSWORD}
   metadata:
-    annotations:
-      openshift.io/generated-by: OpenShiftNewApp
-    generation: 1
+    creationTimestamp: null
     labels:
       app: openshift-activemq
+    name: openshift-activemq
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
     name: openshift-activemq
   spec:
     replicas: 1
     revisionHistoryLimit: 10
     selector:
-      app: openshift-activemq
-      deploymentconfig: openshift-activemq
+      matchLabels:
+        app: openshift-activemq
     strategy:
       activeDeadlineSeconds: 21600
       resources: {}
@@ -27,15 +32,19 @@ objects:
         maxUnavailable: 25%
         timeoutSeconds: 600
         updatePeriodSeconds: 1
-      type: Rolling
+      type: RollingUpdate
     template:
       metadata:
         labels:
           app: openshift-activemq
-          deploymentconfig: openshift-activemq
       spec:
         containers:
-        - image: ''
+        - image: image-registry.openshift-image-registry.svc:5000/${IMAGE_NAMESPACE}/${IMAGE_NAMESPACE_TAG}
+          env:
+            - name: ACTIVEMQ_ADMIN_LOGIN
+              value: ${ACTIVEMQ_ADMIN_LOGIN}  # Set the admin password for the ActiveMQ web console
+            - name: ACTIVEMQ_ADMIN_PASSWORD
+              value: ${ACTIVEMQ_ADMIN_PASSWORD}  # Set the admin username for the ActiveMQ web console
           imagePullPolicy: Always
           name: openshift-activemq
           ports:
@@ -46,22 +55,20 @@ objects:
           resources: {}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /opt/activemq/data
+              name: activemq-data
+              subPath: activemq
+        volumes:
+        - name: activemq-data
+          persistentVolumeClaim:
+            claimName: activemq-pvc
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         schedulerName: default-scheduler
         securityContext: {}
         terminationGracePeriodSeconds: 30
     test: false
-    triggers:
-    - type: ConfigChange
-    - imageChangeParams:
-        automatic: true
-        containerNames:
-        - openshift-activemq
-        from:
-          kind: ImageStreamTag
-          name: openshift-activemq:latest
-      type: ImageChange
 - apiVersion: v1
   kind: BuildConfig
   metadata:
@@ -74,13 +81,13 @@ objects:
     output:
       to:
         kind: ImageStreamTag
-        name: openshift-activemq:latest
+        name: ${IMAGE_NAMESPACE_TAG}
     postCommit: {}
     resources: {}
     runPolicy: Serial
     source:
       git:
-        uri: https://github.com/natronq/openshift-activemq.git
+        uri: https://github.com/abin-aot/openshift-activemq.git
       type: Git
     strategy:
       type: Docker
@@ -122,7 +129,6 @@ objects:
       targetPort: 61616
     selector:
       app: openshift-activemq
-      deploymentconfig: openshift-activemq
     sessionAffinity: None
     type: ClusterIP
 - apiVersion: v1
@@ -142,3 +148,17 @@ objects:
       name: openshift-activemq
       weight: 100
     wildcardPolicy: None
+parameters:
+- name: ACTIVEMQ_ADMIN_LOGIN
+  displayname: ACTIVEMQ_ADMIN_LOGIN
+  required: true
+- name: ACTIVEMQ_ADMIN_PASSWORD
+  displayname: ACTIVEMQ_ADMIN_PASSWORD
+  required: true
+- name: IMAGE_NAMESPACE
+  displayname: IMAGE_NAMESPACE
+  required: true
+- name: IMAGE_NAMESPACE_TAG
+  displayname: IMAGE_NAMESPACE_TAG
+  required: true
+
