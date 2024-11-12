@@ -25,7 +25,7 @@ RUN set -x && \
     chmod +x /docker-entrypoint.sh
 
 WORKDIR $ACTIVEMQ_HOME
-RUN echo "admin: admin123, admin" > /tmp/jetty-realm.properties && mv /tmp/jetty-realm.properties /opt/activemq/conf/jetty-realm.properties
+RUN echo "${ACTIVEMQ_ADMIN_LOGIN}: ${ACTIVEMQ_ADMIN_PASSWORD}, admin" > /tmp/jetty-realm.properties && mv /tmp/jetty-realm.properties /opt/activemq/conf/jetty-realm.properties
 
 
 EXPOSE 61616
