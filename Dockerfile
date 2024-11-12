@@ -10,7 +10,7 @@ ENV ACTIVEMQ_VERSION=5.15.2 \
 ENV ACTIVEMQ=apache-activemq-$ACTIVEMQ_VERSION    
 
 COPY files/docker-entrypoint.sh /docker-entrypoint.sh
-RUN echo "admin123 activemq" > /tmp/jmx.password && mv /tmp/jmx.password /conf/jmx.password
+
 
 RUN set -x && \
     curl -s -S https://archive.apache.org/dist/activemq/$ACTIVEMQ_VERSION/$ACTIVEMQ-bin.tar.gz | tar xvz -C /opt && \
@@ -25,7 +25,7 @@ RUN set -x && \
 
 WORKDIR $ACTIVEMQ_HOME
 
-RUN echo "admin123 activemq" > /tmp/jmx.password && mv /tmp/jmx.password /home/conf/jmx.password
+#RUN echo "admin123 activemq" > /tmp/jmx.password && mv /tmp/jmx.password /home/conf/jmx.password
 
 EXPOSE 61616
 EXPOSE 8161
