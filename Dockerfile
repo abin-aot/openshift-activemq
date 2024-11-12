@@ -1,3 +1,4 @@
+
 FROM openjdk:8-jre
 
 MAINTAINER Michael Staehler <michael.staehler.ext@dkv-mobility.com>
@@ -24,7 +25,7 @@ RUN set -x && \
     chmod +x /docker-entrypoint.sh
 
 WORKDIR $ACTIVEMQ_HOME
-
+RUN echo "admin: admin123, admin" > /tmp/jetty-realm.properties && mv /tmp/jetty-realm.properties /opt/activemq/conf/jetty-realm.properties
 
 
 EXPOSE 61616
