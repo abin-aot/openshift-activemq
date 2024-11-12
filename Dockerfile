@@ -25,8 +25,7 @@ RUN set -x && \
 
 WORKDIR $ACTIVEMQ_HOME
 
-RUN echo "admin123 activemq" > /tmp/jmx.password && mv /tmp/jmx.password /opt/activemq/conf/jmx.password
-RUN echo "admin123 activemq" > /tmp/jmx.password && mv /tmp/jmx.password /opt/apache-activemq-5.15.2/conf/jmx.password
+
 
 EXPOSE 61616
 EXPOSE 8161
