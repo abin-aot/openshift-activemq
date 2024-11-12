@@ -91,6 +91,12 @@ objects:
       type: Git
     strategy:
       type: Docker
+      dockerStrategy:
+        env:
+            - name: ACTIVEMQ_ADMIN_LOGIN
+              value: ${ACTIVEMQ_ADMIN_LOGIN}  # Set the admin password for the ActiveMQ web console
+            - name: ACTIVEMQ_ADMIN_PASSWORD
+              value: ${ACTIVEMQ_ADMIN_PASSWORD}
     successfulBuildsHistoryLimit: 5
     triggers:
     - github:
