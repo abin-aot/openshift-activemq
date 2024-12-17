@@ -3,7 +3,7 @@ FROM openjdk:8-jre
 
 MAINTAINER Michael Staehler <michael.staehler.ext@dkv-mobility.com>
 
-ENV ACTIVEMQ_VERSION=5.15.2 \
+ENV ACTIVEMQ_VERSION=5.4.1 \
     POSTGRES_JDBC_DRIVER_VERSION=9.4.1212 \
     ACTIVEMQ_TCP=61616 \
     ACTIVEMQ_HOME=/opt/activemq
